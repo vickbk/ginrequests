@@ -1,4 +1,4 @@
-module github.com/vickbk/gin-requests
+module github.com/vickbk/ginrequests
 
 go 1.25.4
 
