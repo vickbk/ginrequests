@@ -13,7 +13,7 @@ A Go package that simplifies building and managing HTTP request handlers for the
 ## Installation
 
 ```bash
-go get github.com/vickbk/gin-requests
+go get github.com/vickbk/ginrequests
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ import (
     "net/http"
 
     "github.com/gin-gonic/gin"
-    "github.com/vickbk/gin-requests/ginrequests"
+    "github.com/vickbk/ginrequests"
 )
 
 func main() {
