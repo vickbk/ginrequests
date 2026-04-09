@@ -1,0 +1,57 @@
+package ginrequests
+
+import (
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Request struct {
+	Handler      []gin.HandlerFunc
+	Method, Path string
+}
+
+// validate checks that the Request has required fields
+func (req *Request) validate() error {
+	if req.Path == "" {
+		return fmt.Errorf("request path cannot be empty")
+	}
+	if len(req.Handler) == 0 {
+		return fmt.Errorf("request for path %s has no handlers", req.Path)
+	}
+	return nil
+}
+
+type RequestList []Request
+
+func (rl *RequestList) validate() {
+	for _, req := range *rl {
+		if err := req.validate(); err != nil {
+			panic(fmt.Sprintf("invalid request configuration: %v", err))
+		}
+	}
+}
+
+type ReqCaller interface {
+	addRequest(method string, requests *RequestList)
+}
+
+type Path string
+
+func (p Path) addRequest(method string, requests *RequestList) {
+	*requests = append(*requests, Request{
+		Handler: make([]gin.HandlerFunc, 0, 1),
+		Method:  method,
+		Path:    string(p),
+	})
+}
+
+type GinHandler gin.HandlerFunc
+
+func (h GinHandler) addRequest(_ string, requests *RequestList) {
+	if len(*requests) == 0 {
+		panic("handler added before any path - paths must precede handlers")
+	}
+	lastIdx := len(*requests) - 1
+	(*requests)[lastIdx].Handler = append((*requests)[lastIdx].Handler, gin.HandlerFunc(h))
+}
