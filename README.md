@@ -58,9 +58,7 @@ func main() {
     allRequests := ginrequests.NormalizeRequests(requests, postRequests)
 
     // Register routes with Gin
-    for _, req := range allRequests {
-        r.Handle(req.Method, req.Path, req.Handler...)
-    }
+    allRequests.AddRoutes(r)
 
     r.Run(":8080")
 }

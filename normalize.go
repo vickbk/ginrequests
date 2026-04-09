@@ -10,8 +10,8 @@ package ginrequests
 //
 //	allRequests := NormalizeRequests(getRequests, postRequests, deleteRequests)
 //	// Result: single slice containing all 3 requests
-func NormalizeRequests(rs ...[]Request) []Request {
-	rqs := make([]Request, 0, getTotalRequestsLength(&rs))
+func NormalizeRequests(rs ...[]Request) RequestList {
+	rqs := make(RequestList, 0, getTotalRequestsLength(&rs))
 
 	for _, rq := range rs {
 		rqs = append(rqs, rq...)

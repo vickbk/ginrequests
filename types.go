@@ -32,6 +32,23 @@ func (rl *RequestList) validate() {
 	}
 }
 
+func (rl *RequestList) AddRoutes(router *gin.Engine) {
+	for _, req := range *rl {
+		switch req.Method {
+		case "GET":
+			router.GET(req.Path, req.Handler...)
+		case "POST":
+			router.POST(req.Path, req.Handler...)
+		case "PUT":
+			router.PUT(req.Path, req.Handler...)
+		case "DELETE":
+			router.DELETE(req.Path, req.Handler...)
+		default:
+			panic(fmt.Sprintf("unsupported HTTP method: %s", req.Method))
+		}
+	}
+}
+
 type ReqCaller interface {
 	addRequest(method string, requests *RequestList)
 }
