@@ -181,6 +181,59 @@ func TestGinHandler_AddRequest(t *testing.T) {
 	}
 }
 
+func TestRequestList_AddRoutes_RegistersRoutes(t *testing.T) {
+	handler := func(c *gin.Context) {}
+	rl := RequestList{
+		{Path: "/one", Method: "GET", Handler: []gin.HandlerFunc{handler}},
+		{Path: "/two", Method: "POST", Handler: []gin.HandlerFunc{handler}},
+		{Path: "/three", Method: "PUT", Handler: []gin.HandlerFunc{handler}},
+		{Path: "/four", Method: "DELETE", Handler: []gin.HandlerFunc{handler}},
+	}
+
+	router := gin.New()
+	rl.AddRoutes(router)
+
+	routes := router.Routes()
+	if len(routes) != len(rl) {
+		t.Fatalf("Expected %d registered routes, got %d", len(rl), len(routes))
+	}
+
+	expected := map[string]struct{}{
+		"GET:/one":    {},
+		"POST:/two":   {},
+		"PUT:/three":  {},
+		"DELETE:/four": {},
+	}
+
+	for _, route := range routes {
+		key := route.Method + ":" + route.Path
+		if _, ok := expected[key]; !ok {
+			t.Fatalf("Unexpected registered route: %s %s", route.Method, route.Path)
+		}
+		delete(expected, key)
+	}
+
+	if len(expected) != 0 {
+		t.Fatalf("Expected routes were not registered: %v", expected)
+	}
+}
+
+func TestRequestList_AddRoutes_UnsupportedMethodPanics(t *testing.T) {
+	handler := func(c *gin.Context) {}
+	rl := RequestList{
+		{Path: "/bad", Method: "PATCH", Handler: []gin.HandlerFunc{handler}},
+	}
+
+	router := gin.New()
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatal("Expected panic for unsupported HTTP method")
+		}
+	}()
+
+	rl.AddRoutes(router)
+}
+
 func TestRequest_MultipleScenarios(t *testing.T) {
 	handler := func(c *gin.Context) {}
 

@@ -32,6 +32,10 @@ func (rl *RequestList) validate() {
 	}
 }
 
+// AddRoutes registers each request in the list with the provided Gin router.
+//
+// Supported methods are GET, POST, PUT, and DELETE. If a request contains an
+// unsupported HTTP method, AddRoutes will panic.
 func (rl *RequestList) AddRoutes(router *gin.Engine) {
 	for _, req := range *rl {
 		switch req.Method {
